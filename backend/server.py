@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -9,6 +10,8 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
+from analytics import QuickCommerceAnalytics
+from excel_export import create_excel_report
 
 
 ROOT_DIR = Path(__file__).parent
@@ -40,7 +43,7 @@ class StatusCheckCreate(BaseModel):
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Quick Commerce Analytics API"}
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
@@ -65,6 +68,100 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+# Analytics Endpoints
+@api_router.get("/analytics/overview")
+async def get_overview():
+    """Get overview metrics"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_overview_metrics()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/order-delays")
+async def get_order_delays():
+    """Get order delays analysis"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_order_delays_analysis()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/cancellations")
+async def get_cancellations():
+    """Get cancellation analysis"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_cancellation_analysis()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/stockouts")
+async def get_stockouts():
+    """Get stockout analysis"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_stockout_analysis()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/riders")
+async def get_rider_performance():
+    """Get rider performance metrics"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_rider_performance()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/picking-time")
+async def get_picking_time():
+    """Get picking time analysis"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_picking_time_analysis()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/recommendations")
+async def get_recommendations():
+    """Get data-driven recommendations"""
+    try:
+        analytics = QuickCommerceAnalytics()
+        data = analytics.get_recommendations()
+        analytics.close()
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/analytics/export-excel")
+async def export_excel():
+    """Export analytics report to Excel"""
+    try:
+        excel_file = create_excel_report()
+        if excel_file:
+            return StreamingResponse(
+                excel_file,
+                media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                headers={"Content-Disposition": f"attachment; filename=quickcommerce_analytics_{datetime.now().strftime('%Y%m%d')}.xlsx"}
+            )
+        else:
+            raise HTTPException(status_code=500, detail="Failed to generate Excel report")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Include the router in the main app
 app.include_router(api_router)
