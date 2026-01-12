@@ -224,42 +224,6 @@ ORDER BY stockout_count DESC
 LIMIT 10;
 ```
 
-## 🚀 Future Enhancements
-
-- Real-time data streaming with WebSockets
-- Predictive analytics using machine learning
-- Advanced filtering and date range selection
-- User authentication and role-based access
-- Integration with actual Instacart dataset
-- Mobile-responsive improvements
-- PDF report generation
-- Scheduled email reports
-
-## 📝 Interview Talking Points
-
-**Stack Justification:**
-- PostgreSQL chosen for robust SQL query support and scalability
-- FastAPI for high-performance async API endpoints
-- Pandas for efficient data manipulation and analysis
-- React + Recharts for interactive, responsive visualizations
-- SQLAlchemy ORM for maintainable database operations
-
-**Analytical Approach:**
-- Identified key operational bottlenecks through data correlation
-- Used statistical analysis to prioritize recommendations
-- Implemented zone-based and time-based segmentation
-- Created actionable insights from raw operational data
-
-**Technical Decisions:**
-- Normalized database schema for data integrity
-- Indexed frequently queried columns for performance
-- Used connection pooling for database efficiency
-- Implemented error handling and logging throughout
-- Separated concerns (database, analytics, API, UI)
-
-## 📄 License
-
-This project is developed as an APM (Analytics & Product Management) portfolio piece.
 
 ---
 
