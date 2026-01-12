@@ -183,7 +183,9 @@ class QuickCommerceAnalytics:
                 Store.name,
                 Store.zone,
                 func.count(OrderProduct.id).label('stockout_count')
-            ).join(Order).join(OrderProduct).filter(
+            ).select_from(Store).join(Order, Order.store_id == Store.store_id).join(
+                OrderProduct, OrderProduct.order_id == Order.order_id
+            ).filter(
                 OrderProduct.was_out_of_stock == True
             ).group_by(Store.store_id, Store.name, Store.zone)
             
